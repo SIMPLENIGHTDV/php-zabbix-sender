@@ -12,9 +12,6 @@ class Sender {
 
     private $_timeout = 30;
 
-    private $_protocolHeaderString = 'ZBXD';
-    private $_protocolVersion      = 1;
-
     private $_lastResponseInfo  = null;
     private $_lastResponseArray = null;
     private $_lastProcessed     = null;
@@ -77,18 +74,6 @@ class Sender {
         return $this->_timeout;
     }
 
-    function setProtocolHeaderString($headerString){
-        $this->_protocolHeaderString = $headerString;
-        return $this;
-    }
-
-    function setProtocolVersion($version){
-        if (is_int($version) and $version > 0) {
-            $this->_protocolVersion = $version;
-        }
-        return $this;
-    }
-
     function addData($hostname=null,$key=null,$value=null,$clock=null)
     {
         $input = array("host"=>$hostname,"value"=>$value,"key"=>$key);
@@ -105,28 +90,7 @@ class Sender {
     }
 
     private function _buildSendData(){
-        $json_data   = json_encode( array_map(
-                                        function($t){ return is_string($t) ? utf8_encode($t) : $t; },
-                                        $this->_data
-                                    ) 
-                                );
-        $json_length = strlen($json_data);
-        $data_header = pack("aaaaCCCCCCCCC",
-                                substr($this->_protocolHeaderString,0,1),
-                                substr($this->_protocolHeaderString,1,1),
-                                substr($this->_protocolHeaderString,2,1),
-                                substr($this->_protocolHeaderString,3,1),
-                                intval($this->_protocolVersion),
-                                ($json_length & 0xFF),
-                                ($json_length & 0x00FF)>>8,
-                                ($json_length & 0x0000FF)>>16,
-                                ($json_length & 0x000000FF)>>24,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x00
-                            );
-        return ($data_header . $json_data);
+        return json_encode( $this->_data, JSON_UNESCAPED_UNICODE );
     }
 
     protected function _parseResponseInfo($info=null){
