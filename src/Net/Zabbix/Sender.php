@@ -25,9 +25,8 @@ class Sender {
     /**
      * __construct
      *
-     * @param  string  $servername
+     * @param  string $servername
      * @param  integer $serverport
-     * @return void
      */
     function __construct($servername = 'localhost', $serverport = 10051)
     {
@@ -251,8 +250,7 @@ class Sender {
                 $this->initData();
                 return true;
             }else{
-                $this->_clearLastResponseData();
-                return false; 
+                return false;
             }
         }else{
             $this->_clearLastResponseData();
