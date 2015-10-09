@@ -18,6 +18,7 @@ class Sender {
     private $_lastFailed        = null;
     private $_lastSpent         = null;
     private $_lastTotal         = null;
+    private $_lastRequest       = null;
 
     private $_socket;
     private $_data;
@@ -130,6 +131,10 @@ class Sender {
     function getLastTotal(){
         return $this->_lastTotal;
     }
+
+    function getLastRequest() {
+        return $this->_lastRequest;
+    }
     
     private function _clearLastResponseData(){
         $this->_lastResponseInfo    = null;
@@ -223,7 +228,9 @@ class Sender {
         if($sentsize === false or $sentsize != $datasize){
             throw new SenderNetworkException('cannot receive response');
         }
-        
+
+        $this->_lastRequest = $sendData;
+
         /* receive data from zabbix server */ 
         $recvData = $this->_read($this->_socket);
         if($recvData === false){
